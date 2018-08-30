@@ -392,33 +392,84 @@ function defineSpecsFor(apiRoot){
 
     });
 */
-    // TODO'S TAGS
+    // TODOS' TAGS
 
     describe( "todos' tags", function(){
-      beforeEach(function(){
-        return delete_(todoRoot);
-      });
-      beforeEach(function(){
-        return delete_(tagRoot);
+      beforeEach(() => delete_(todoRoot).then(() => delete_(tagRoot)));
+
+      it("can create a todo, associate a tag to it, and get the tag id in the associated todo", function(){
+        var tagId;
+        var todoUrl;
+        var request = createFreshTagAndGetItsId()
+        .then((id) => tagId = id)
+        .then(() => createFreshTodoAndGetItsUrl())
+        .then((url) => todoUrl = url)
+        .then(() => postJson(todoUrl + '/tags', {id: tagId}))
+        .then(() => get(todoUrl));
+
+        return request.then((todo) => {
+          console.log(todo);
+          expect(todo).to.have.property('tags');
+          expect(todo.tags).to.have.length(1);
+          expect(todo.tags[0]).to.have.property('id', tagId);
+        });
+
+
       });
 
-      it("can create a todo, associate tags to it, and retrieve them by todo", function(){
+      it("can create a todo, associate a tag to it, and retrieve the list by todo", function(){
 
         var tagId;
         var todoUrl;
 
-        var request = createFreshTagAndGetItsId({title: "associativity"})
+        var request = createFreshTagAndGetItsId({title: 'associative tag'})
         .then((id) => tagId = id)
         .then(() => createFreshTodoAndGetItsUrl())
         .then((url) => todoUrl = url)
-        .then(() => postJson(todoUrl + '/tags', {tag_id: tagId}))
+        .then(() => postJson(todoUrl + '/tags', {id: tagId}))
         .then(() => get(todoUrl + '/tags'));
 
         return request.then((tags) => {
           expect(tags).to.have.length(1);
-          expect(tags[0]).to.have.property('id', tagId);
-        })
+          expect(tags[0]).to.have.property('title', 'associative tag');
+        });
         
+      });
+
+      it("can create a todo, associate a tag to it, and retrieve it by its todo", function(){
+
+        var tagId;
+        var todoUrl;
+
+        var request = createFreshTagAndGetItsId({title: 'associative tag'})
+        .then((id) => tagId = id)
+        .then(() => createFreshTodoAndGetItsUrl())
+        .then((url) => todoUrl = url)
+        .then(() => postJson(todoUrl + '/tags', {id: tagId}))
+        .then(() => get(todoUrl + '/tags/' + tagId));
+
+        return request.then((tag) => {
+          expect(tag).to.have.property('title', 'associative tag');
+        });
+        
+      });
+
+      it("can create a todo, associate tags to it and remove a tag association", function(){
+        var tagId;
+        var todoUrl;
+        var request = createFreshTagAndGetItsId()
+        .then((id) => tagId = id)
+        .then(() => createFreshTodoAndGetItsUrl())
+        .then((url) => todoUrl = url)
+        .then(() => postJson(todoUrl + '/tags', {id: tagId}))
+        .then(() => createFreshTagAndGetItsId())
+        .then((id) => postJson(todoUrl + '/tags', {id: id}))
+        .then(() => get(todoUrl + '/tags'))
+        .then((data) => expect(data).to.have.length(2))
+        .then(() => delete_(todoUrl + '/tags/' + tagId))
+        .then(() => get(todoUrl + '/tags'));
+
+        return request.then((data) => expect(data).to.have.length(1));
       });
     });
 
