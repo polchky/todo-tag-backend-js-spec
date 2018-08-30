@@ -87,7 +87,7 @@ function defineSpecsFor(apiRoot){
     };
 
     // TODOS
-
+/**
     describe( "todo basics", function(){
       specify( "the todo endpoint responds to a GET on the todos", function(){
         var getTodoRoot = getRaw(todoRoot);
@@ -391,7 +391,7 @@ function defineSpecsFor(apiRoot){
       });
 
     });
-
+*/
     // TODO'S TAGS
 
     describe( "todos' tags", function(){
@@ -402,18 +402,23 @@ function defineSpecsFor(apiRoot){
         return delete_(tagRoot);
       });
 
-      it("can create a todo, create a tag, and associate the two", function(){
+      it("can create a todo, associate tags to it, and retrieve them by todo", function(){
 
         var tagId;
         var todoUrl;
 
-        var test = createFreshTagAndGetItsId()
+        var request = createFreshTagAndGetItsId({title: "associativity"})
         .then((id) => tagId = id)
         .then(() => createFreshTodoAndGetItsUrl())
-        .then((url) => {todoUrl = url; postJson(url + '/tags', {tag_id: tagId})})
-        .then(console.log);
+        .then((url) => todoUrl = url)
+        .then(() => postJson(todoUrl + '/tags', {tag_id: tagId}))
+        .then(() => get(todoUrl + '/tags'));
 
-        return expect(test).to.be.fulfilled;
+        return request.then((tags) => {
+          expect(tags).to.have.length(1);
+          expect(tags[0]).to.have.property('id', tagId);
+        })
+        
       });
     });
 
