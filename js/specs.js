@@ -356,7 +356,7 @@ function defineSpecsFor(apiRoot){
       it("changes to a tag are persisted and show up when re-fetching the tag", function(){
         var patchedTag = createFreshTagAndGetItsUrl()
           .then( function(urlForNewTag){
-            return patchJson( urlForNewTag, {title:"changed title", completed:true} );
+            return patchJson( urlForNewTag, {title:"changed title"} );
           });
 
         function verifyTagsProperties(tag){
