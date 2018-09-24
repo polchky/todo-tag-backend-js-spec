@@ -105,7 +105,7 @@ function defineSpecsFor(apiRoot) {
 
       specify("the todos endpoint responds successfully to a DELETE", async function () {
         var deleteRoot = await delete_(todoRoot);
-        expect(deleteRoot).to.exist;
+        expect(deleteRoot).to.be.fulfilled;
       });
 
       specify("after a DELETE the api root responds to a GET with a JSON representation of an empty array", async function () {
@@ -192,7 +192,7 @@ function defineSpecsFor(apiRoot) {
       });
 
       it("changes to a todo are persisted and show up when re-fetching the todo", async function () {
-        
+
         var patchedTodo = async function() {
           var url = await createFreshTodoAndGetItsUrl();
           return await patchJson(url, { title: "changed title", completed: true });
@@ -256,7 +256,7 @@ function defineSpecsFor(apiRoot) {
 
       specify("the tags endpoint responds successfully to a DELETE", async function () {
         var deleteRoot = await delete_(tagRoot);
-        expect(deleteRoot).to.exist;
+        expect(deleteRoot).to.be.fulfilled;
       });
 
       specify("after a DELETE the api root responds to a GET with a JSON representation of an empty array", async function () {
@@ -331,7 +331,7 @@ function defineSpecsFor(apiRoot) {
       });
 
       it("changes to a tag are persisted and show up when re-fetching the tag", async function () {
-        
+
         var patchedTag = async function() {
           var url = await createFreshTagAndGetItsUrl();
           return await patchJson(url, { title: "changed title"});
@@ -384,7 +384,7 @@ function defineSpecsFor(apiRoot) {
       it("can create a todo, associate a tag to it, and get the tag id in the associated todo", async function () {
         var resources = await createTodoAndAssociatedTag();
         var todo = await get(resources.todo.url);
-        expect(todo).to.have.property('tags'); 
+        expect(todo).to.have.property('tags');
         expect(todo.tags).to.have.length(1);
         expect(todo.tags[0]).to.have.property('id', resources.tag.id);
       });
