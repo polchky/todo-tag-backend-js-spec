@@ -1,7 +1,7 @@
 function defineSpecsFor(apiRoot) {
 
-  var todoRoot = apiRoot + '/todos';
-  var tagRoot = apiRoot + '/tags';
+  var todoRoot = apiRoot + '/todos/';
+  var tagRoot = apiRoot + '/tags/';
 
   async function get(url, options) {
     var result = await getRaw(url, options);
@@ -147,7 +147,7 @@ function defineSpecsFor(apiRoot) {
 
       it("each todo has an ID, which can be used to retrieve the todo", async function () {
         var id = await createFreshTodoAndGetItsId();
-        var todo = await get(todoRoot + '/' + id);
+        var todo = await get(todoRoot + id);
         expect(todo).to.have.property('id', id);
       });
 
@@ -292,7 +292,7 @@ function defineSpecsFor(apiRoot) {
 
       it("each tag has an ID, which can be used to retrieve the tag", async function () {
         var id = await createFreshTagAndGetItsId();
-        var tag = await get(tagRoot + '/' + id);
+        var tag = await get(tagRoot + id);
         expect(tag).to.have.property('id', id);
       });
 
@@ -364,7 +364,7 @@ function defineSpecsFor(apiRoot) {
       var resources = {};
       resources.todo = await postTodoRoot({title: todoTitle || "base todo"});
       resources.tag = await postTagRoot({title: tagTitle || "associated tag"});
-      var tag = await postJson(resources.todo.url + '/tags', {id: resources.tag.id});
+      var tag = await postJson(resources.todo.url + '/tags/', {id: resources.tag.id});
       expect(tag).to.have.property("id");
       return resources;
     };
@@ -391,7 +391,7 @@ function defineSpecsFor(apiRoot) {
 
       it("can create a todo, associate a tag to it, and retrieve the tag list by todo", async function () {
         var resources = await createTodoAndAssociatedTag(null, "joined tag");
-        var tags = await get(resources.todo.url + '/tags');
+        var tags = await get(resources.todo.url + '/tags/');
         expect(tags).to.have.length(1);
         expect(tags[0]).to.have.property('title', "joined tag");
       });
@@ -399,16 +399,16 @@ function defineSpecsFor(apiRoot) {
       it("can create a todo, associate tags to it and remove one tag association", async function () {
         var resources = await createTodoAndAssociatedTag();
         var newTagId = await createFreshTagAndGetItsId();
-        await postJson(resources.todo.url + "/tags", {id: newTagId});
+        await postJson(resources.todo.url + "/tags/", {id: newTagId});
         await delete_(resources.todo.url + "/tags/" + resources.tag.id);
-        var tags = await get(resources.todo.url + "/tags");
+        var tags = await get(resources.todo.url + "/tags/");
         expect(tags).to.have.length(1);
       });
 
       it("can create a todo, associate tags to it and remove all tag associations", async function () {
         var resources = await createTodoAndAssociatedTag();
-        await delete_(resources.todo.url + "/tags");
-        var tags = await get(resources.todo.url + "/tags");
+        await delete_(resources.todo.url + "/tags/");
+        var tags = await get(resources.todo.url + "/tags/");
         expect(tags).to.have.length(0);
       });
     });
@@ -429,7 +429,7 @@ function defineSpecsFor(apiRoot) {
 
       it("can create a tag, associate a todo to it, and retrieve the todo list by tag", async function () {
         var resources = await createTodoAndAssociatedTag("joined todo", null);
-        var todos = await get(resources.tag.url + "/todos");
+        var todos = await get(resources.tag.url + "/todos/");
         expect(todos).to.have.length(1);
         expect(todos[0]).to.have.property('title', "joined todo");
       });
