@@ -364,8 +364,7 @@ function defineSpecsFor(apiRoot) {
       var resources = {};
       resources.todo = await postTodoRoot({title: todoTitle || "base todo"});
       resources.tag = await postTagRoot({title: tagTitle || "associated tag"});
-      var tag = await postJson(resources.todo.url + '/tags/', {id: resources.tag.id});
-      expect(tag).to.have.property("id");
+      await post(resources.todo.url + '/tags/', {id: resources.tag.id});
       return resources;
     };
 
